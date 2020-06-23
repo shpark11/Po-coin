@@ -1,0 +1,48 @@
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+    </head>
+    <body>
+        <script type="text/javascript" src="/js/sha1.min.js"></script>
+        <script type="text/javascript" src="/js/jquery.min.js"></script>
+        <script type="text/javascript" src="/js/socket.io.min.js"></script>
+        <script src="/js/jquery-2.2.0.min.js"></script>
+        <script src="/js/qrcode.js"></script>
+       
+        <form action="withdraw" method="get">
+        <div class="container" style="color:black; background-color:white; padding:20px;">
+            <div class="row">
+                <div class="col-md-6 offset-md-3 text-xs-center">
+                    <br>
+                    <h3>Merchant's Page</h3>
+                    <br>
+                </div><br><br>
+            </div>
+            <div lass="row" style="background-color:white;">
+                <!-- merchant의 주소를 표시--> 
+                <b>Account: <%=merchantAddress%> </b><br>
+                <input type="hidden" id="address" value="<%=merchantAddress%>">
+            </div><br>
+            <div>
+                <center>
+                    <div id="qrcode" style="width:100px; height:100px; margin-top:15px">
+                    </div><br>
+                </center>
+            </div>
+            <div lass="row" style="background-color:white;">
+                <!--merchant의 balance 값을 표시--> 
+                <b>Balance : <%=merchantToken%> PO</b><br>
+            </div><br>
+        </div>
+        </form>
+         <script>
+            var qrcode = new QRCode(document.getElementById("qrcode"), {
+                width : 100,
+                height : 100
+            });            
+            var elText = document.getElementById("address");
+            qrcode.makeCode(elText.value);
+        </script>
+    </body>
+</html>

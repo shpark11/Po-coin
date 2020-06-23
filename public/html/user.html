@@ -1,0 +1,183 @@
+<html>
+
+    <head>
+
+        <meta charset="utf-8">
+
+        <style type="text/css">
+            canvas {
+                width:300px;
+                height:300px;
+            }
+
+        </style>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    </head>
+
+    <body>
+        <script type="text/javascript" src="/js/sha1.min.js"></script>
+        <script type="text/javascript" src="/js/jquery.min.js"></script>
+        <script type="text/javascript" src="/js/socket.io.min.js"></script>
+        <script type="text/javascript" src="/js/jsQR.js"></script>
+        
+        <div class="container" style="color:black; background-color:white; padding:20px;">
+            <div class="row">
+                <div class="col-md-6 offset-md-3 text-xs-center">
+                    <br>
+                    <h3>User's Page</h3>
+                    <br>
+                </div><br><br>
+            </div>
+            <div  class="row" id="output">
+                <div id="outputMessage">
+                    <b>Receiver's Account:</b><br> 
+                    QR코드를 인식시켜주세요.
+                </div>
+                <div id="outputLayer" hidden>
+                    <b>Receiver's Account:</b><br>
+                    <span id="outputData"></span>
+                   
+                </div>
+            </div>
+            <br>
+            <div class="row"><b>QR Code Scan</b></div>
+            <div class="row" id="frame">
+                <div id="loadingMessage">
+                    🎥
+                </div>
+                <canvas id="canvas"></canvas>
+            </div>
+            <div class="row" style="background-color:white;">
+                <!--userdml balance 값을 표시--> 
+                <b>Balance : <%=userToken%> PO / <%=userPoint%> Point</b><br>
+            </div><br>
+            <div class="row">
+                <b>Amount : <input name="amount" id="amount" style="width:150;" type=text></input> <span id="PO" class="PO">PO</span> <span id="PT" class="PT" type="hidden">Point</span> 
+                    <button class="btn change PO">Pay with Point</button></b> <button class="btn change PT">Pay with PO</button></b>
+            </div><br>
+            <form id="target" action="send" method="get"><!--<form action="Send" method="get">-->
+                <div class="row">
+                    <div class="col-md-6 offset-md-3 text-xs-center">
+                        <br>
+                        <button class="btn btn-primary" id="Send">Send</button> 
+                    </div>
+                </div>
+                <input name="toAddress" id="toAddress" type=hidden value="0x1a4c3F33275f7A444338AC282a343A8272a2E09E"></input> <!--요부분은 value 뺼 것-->
+                <input name="sendAmount" id="sendAmount" type=hidden></input>
+                <input name="sendUnit" id="sendUnit" type=hidden></input>
+            </form>
+        </div>
+    
+    </body>
+</html>
+
+<script type="text/javascript"> 
+
+    document.addEventListener("DOMContentLoaded", function() {      
+        var video = document.createElement("video");        
+        var canvasElement = document.getElementById("canvas");
+        var canvas = canvasElement.getContext("2d");
+        var loadingMessage = document.getElementById("loadingMessage");
+        var outputContainer = document.getElementById("output");
+        var outputMessage = document.getElementById("outputMessage");
+        var outputData = document.getElementById("outputData");
+        
+        function drawLine(begin, end, color) {
+            canvas.beginPath();
+            canvas.moveTo(begin.x, begin.y);
+            canvas.lineTo(end.x, end.y);
+            canvas.lineWidth = 4;
+            canvas.strokeStyle = color;
+            canvas.stroke();
+
+        }        
+
+        // 카메라 사용시
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
+            video.srcObject = stream;
+            video.setAttribute("playsinline", true);      // iOS 사용시 전체 화면을 사용하지 않음을 전달
+            video.play();
+            requestAnimationFrame(tick);
+        });
+
+        function tick() {            
+            loadingMessage.innerText = "⌛ 스캔 기능을 활성화 중입니다."
+            if(video.readyState === video.HAVE_ENOUGH_DATA) {
+                loadingMessage.hidden = true;
+                canvasElement.hidden = false;
+                outputContainer.hidden = false;
+
+                // 읽어들이는 비디오 화면의 크기
+                canvasElement.height = video.videoHeight;
+                canvasElement.width = video.videoWidth;
+                canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+
+                var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                var code = jsQR(imageData.data, imageData.width, imageData.height, {
+                                inversionAttempts : "dontInvert",
+                            });
+
+                // QR코드 인식에 성공한 경우
+                if(code) {                        
+                    // 인식한 QR코드의 영역을 감싸는 사용자에게 보여지는 테두리 생성
+                    drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF0000");
+                    drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF0000");
+                    drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF0000");
+                    drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF0000");
+
+                    outputMessage.hidden = true;
+                    outputData.parentElement.hidden = false;
+                    
+                    // QR코드 메시지 출력
+                    outputData.innerHTML = code.data;
+                    $("#toAddress").val(code.data);
+                    // return을 써서 함수를 빠져나가면 QR코드 프로그램이 종료된다.
+                    return;
+                // QR코드 인식에 실패한 경우 
+                } else {
+                    outputMessage.hidden = false;
+                    outputData.parentElement.hidden = true;
+                }
+
+            }
+            requestAnimationFrame(tick);
+        }
+    });
+
+    $(document).ready(function(){
+        $(".PT").hide();
+        $(".PO").show();
+
+        if(<%=sendingDone%>){
+            alert("전송 요청하였습니다!");
+        }
+    });
+
+    $(".Change").click(function(){
+        //alert("Change Clicked!");
+        var POdisplay = $("#PO").css("display");
+        if(POdisplay=="inline"){
+            $(".PO").hide();
+            $(".PT").show();
+        }else{
+            $(".PT").hide();
+            $(".PO").show();
+        }
+        
+    });
+
+    $("#Send").click(function(){
+        var amount = $("#amount").val()
+        $("#sendAmount").val(amount);
+        var POdisplay = $("#PO").css("display");
+        if(POdisplay=="inline"){
+            $("#sendUnit").val("PO");
+        }else{
+            $("#sendUnit").val("PT");
+        }
+
+        $("#target").submit();
+    });
+</script>

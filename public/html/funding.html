@@ -1,0 +1,75 @@
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+    </head>
+    <body>
+        <script type="text/javascript" src="/js/sha1.min.js"></script>
+        <script type="text/javascript" src="/js/jquery.min.js"></script>
+        <script type="text/javascript" src="/js/socket.io.min.js"></script>
+        <form action="funding" method="get">
+        <div class="container" style="color:black; background-color:grey; padding:20px;">
+            <div class="row">
+                <div class="col-md-6 offset-md-3 text-xs-center">
+                    <br>
+                    <h3>Investors' Page</h3>
+                    <br>
+                    <a href="investor">[Go to the main page for crowdfunding]</a>
+                </div><br><br>
+            </div>
+            <div lass="row" style="background-color:white;">
+                <!--checkGoalReached() 결과에 따라, 값을 표시--> 
+                <% if (ended == false){ %>
+                    <b>Current status : #####Crowdfunding is still under way.#####</b>
+                <% } %>
+                <% if (ended == true){ %>
+                    <b>Current status : #####Crowdfunding is already ended.#####</b>
+                <% } %>
+            </div><br>
+            <div lass="row">
+                <img src="/images/investor.jpg" width="100%" height="50%"> 
+            </div><br>
+            <div class="row">
+                <div>
+                    <br>
+                    <h3>[Join crowdfunding]</h3>
+                    <br>
+                </div>
+            </div>
+            <div class="row">
+                <div> 
+                    <br>       
+                    <b>Account to fund </b>
+                </div>
+                <div> 
+                    <input name="account" id="account" style="width:300px;" type=text></input>
+                </div>
+            </div>
+            <div class="row">
+                <div> 
+                    <br>       
+                    <b>The amount of funding</b>
+                </div>
+                <div> 
+                    <input name="amount" id="amount" style="width:300px;" type=text></input>
+                </div>
+            </div>
+            <div class="row">
+                <div> 
+                    <br>       
+                    <b>Passphrase</b>
+                </div>
+                <div> 
+                    <input name="passphrase" id="passphrase" style="width:300px;" type=text></input>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 offset-md-3 text-xs-center">
+                    <br>
+                    <button class="btn btn-primary">funding</button>
+                </div>
+            </div>
+        </div>
+        </form>
+    </body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <style type="text/css">
+            .row{
+                    margin-left: 40%
+            }
+
+    </style>
+  </head>
+  <body>
+    <div class="container" style="color:black; background-color:white; padding:20px;">
+        <div>
+            <div class="col-md-6 offset-md-3 text-xs-center">
+            <br>
+            <h3>PoCoin</h3>
+            <br>
+            </div><br><br><br><br>
+        </div>
+        <form action="login" method="get">
+            <div class="row">
+                    <input type="text" name="username" placeholder="id"/>
+            </div><br/>
+            <div class="row">
+                    <input type="password" name="password" placeholder="password" />
+            </div><br/>
+            <div class="row">
+                    <button class="btn btn-primary" id="Submit">Submit</button>   
+            </div><br/>
+        </form>
+        <form action="signUp" method="get">
+            <div class="row">
+                    <button id="SignUp">Sign Up</button>
+            </div><br/> 
+        </form>
+    </div>
+  </body>
+</html>
